@@ -1,0 +1,32 @@
+import { test as base } from '@playwright/test'
+import { LoginPage } from '../pages/loginPage'
+import { DeckPage } from '../pages/deckPage'
+import { HomePage } from '../pages/homePage'
+import { CustomerPage } from '../pages/customerPage'
+import { NewCustomerModalPage } from '../pages/newCustomerModalPage'
+
+export const test = base.extend<{
+  loginPage: LoginPage
+  deckPage: DeckPage
+  homePage: HomePage
+  customerPage: CustomerPage
+  newCustomerModalPage: NewCustomerModalPage
+}>({
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page))
+  },
+  deckPage: async ({ page }, use) => {
+    await use(new DeckPage(page))
+  },
+  homePage: async ({ page }, use) => {
+    await use(new HomePage(page))
+  },
+  customerPage: async ({ page }, use) => {
+    await use(new CustomerPage(page))
+  },
+  newCustomerModalPage: async ({ page }, use) => {
+    await use(new NewCustomerModalPage(page))
+  },
+})
+
+export { expect } from '@playwright/test'
