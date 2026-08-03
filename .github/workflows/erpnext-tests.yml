@@ -38,6 +38,10 @@ jobs:
         run: |
           docker compose -f compose.dev.yaml up -d
 
+      - name: Show Docker Containers
+        run: |
+          docker compose -f compose.dev.yaml ps -a
+
       - name: Show ERPNext files
         run: |
           echo "ERPNext repository location:"
