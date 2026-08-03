@@ -82,3 +82,10 @@ jobs:
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: http://localhost:8000
+          ADMIN_USERNAME: Administrator
+          ADMIN_PASSWORD: admin
+        run: npx playwright test
