@@ -9,9 +9,9 @@ services:
       - --skip-character-set-client-handshake
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-123}
-      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_AUTO_UPGRADE: '1'
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 5s
       timeout: 5s
       retries: 30
@@ -22,7 +22,7 @@ services:
   redis-cache:
     image: docker.io/redis:alpine
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 20
@@ -33,7 +33,7 @@ services:
   redis-queue:
     image: docker.io/redis:alpine
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 20
@@ -43,7 +43,7 @@ services:
 
   setup:
     image: docker.io/frappe/bench:latest
-    command: ["bash", "/workspace/erpnext/docker/setup.sh"]
+    command: ['bash', '/workspace/erpnext/docker/setup.sh']
     environment:
       BENCH_DIR: /workspace/frappe-bench
       SITE_NAME: ${SITE_NAME:-erpnext.localhost}
@@ -52,7 +52,7 @@ services:
     working_dir: /workspace
     volumes:
       - bench-data:/workspace/frappe-bench
-      - .:/workspace/erpnext:cached
+      - ../erpnext:/workspace/erpnext:cached
       - erpnext-node-modules:/workspace/erpnext/node_modules
       - banking-node-modules:/workspace/erpnext/banking/node_modules
     depends_on:
@@ -77,18 +77,25 @@ services:
       SITE_NAME: ${SITE_NAME:-erpnext.localhost}
     working_dir: /workspace/frappe-bench
     ports:
-      - "8000:8000"
-      - "9000:9000"
+      - '8000:8000'
+      - '9000:9000'
     volumes:
       - bench-data:/workspace/frappe-bench
-      - .:/workspace/erpnext:cached
+      - ../erpnext:/workspace/erpnext:cached
       - erpnext-node-modules:/workspace/erpnext/node_modules
       - banking-node-modules:/workspace/erpnext/banking/node_modules
     depends_on:
       setup:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/api/method/ping"]
+      test:
+        [
+          'CMD',
+          'curl',
+          '--fail',
+          '--silent',
+          'http://127.0.0.1:8000/api/method/ping',
+        ]
       interval: 10s
       timeout: 5s
       retries: 30
