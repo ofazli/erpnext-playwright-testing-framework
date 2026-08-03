@@ -31,6 +31,6 @@ export class LoginPage {
   }
 
   async goToMainPage() {
-    await this.page.goto(process.env.BASE_URL + '/')
+    await this.page.goto('/')
   }
 }

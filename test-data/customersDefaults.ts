@@ -12,5 +12,5 @@ export const defaultCompanyCustomer: Customer = {
   zipCode: '12345',
   city: 'Anytown',
   state: 'CA',
-  country: 'USA',
+  country: 'Canada',
 }
