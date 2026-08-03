@@ -44,7 +44,8 @@ sudo mkdir -p \
 
 sudo chown -R frappe:frappe \
 	"$ERPNEXT_DIR/node_modules" \
-	"$ERPNEXT_DIR/banking/node_modules"
+	"$ERPNEXT_DIR/banking/node_modules" \
+	"$ERPNEXT_DIR/erpnext/public"
 
 if [[ ! -d "$BENCH_DIR/apps/frappe" ]]; then
 	log "Initializing Frappe bench"
