@@ -72,6 +72,8 @@ services:
       - >-
         sudo rmdir /sites 2>/dev/null || true;
         sudo ln -sfn /workspace/frappe-bench/sites /sites &&
+        sed -E -i 's|^web: bench serve[[:space:]]+--port 8000.*$|web: bench serve --port 8000 --host 0.0.0.0|' Procfile &&
+        cat Procfile &&
         bench start
     environment:
       BENCH_DIR: /workspace/frappe-bench
