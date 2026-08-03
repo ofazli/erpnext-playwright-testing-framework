@@ -10,6 +10,7 @@ ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
 DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-123}"
 
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
+FRAPPE_COMMIT="${FRAPPE_COMMIT:-38a7a98e2297bd74259adaf356bff6698291ff81}"
 PYTHON_VERSION="${PYTHON_VERSION:-python3.14}"
 
 COMPANY_NAME="${COMPANY_NAME:-Automation Company}"
@@ -59,7 +60,28 @@ else
 	log "Existing Frappe bench found"
 fi
 
+log "Checking out pinned Frappe commit"
+
+git -C "$BENCH_DIR/apps/frappe" fetch \
+	--depth 1 \
+	upstream "$FRAPPE_COMMIT"
+
+git -C "$BENCH_DIR/apps/frappe" checkout \
+	--detach \
+	"$FRAPPE_COMMIT"
+
 cd "$BENCH_DIR"
+
+log "Installing pinned Frappe Python package"
+
+bench pip install --editable "$BENCH_DIR/apps/frappe"
+
+log "Installing pinned Frappe Node dependencies"
+
+yarn \
+	--cwd "$BENCH_DIR/apps/frappe" \
+	install \
+	--frozen-lockfile
 
 log "Configuring sites directory"
 
@@ -97,9 +119,9 @@ yarn \
 
 printf "frappe\nerpnext\n" > "$BENCH_DIR/sites/apps.txt"
 
-log "Building ERPNext assets"
+log "Building application assets"
 
-bench build --app erpnext
+bench build
 
 if [[ ! -f "$BENCH_DIR/sites/$SITE_NAME/site_config.json" ]]; then
 	log "Creating site: $SITE_NAME"
@@ -226,6 +248,14 @@ bench \
 log "Selecting default site"
 
 bench use "$SITE_NAME"
+
+log "Showing installed revisions"
+
+echo "Frappe revision:"
+git -C "$BENCH_DIR/apps/frappe" rev-parse HEAD
+
+echo "ERPNext revision:"
+git -C "$ERPNEXT_DIR" rev-parse HEAD
 
 log "ERPNext environment setup completed successfully"
 
