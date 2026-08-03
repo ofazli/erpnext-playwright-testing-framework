@@ -19,12 +19,24 @@ jobs:
 
       - name: Clone ERPNext repository
         run: |
-          git clone \
-            --depth 1 \
-            https://github.com/frappe/erpnext.git \
-            ../erpnext
+          mkdir -p ../erpnext
 
-            git -C ../erpnext checkout 07ac4d83ef097c83e18b246dac5196d6c7b0656b
+          git -C ../erpnext init
+
+          git -C ../erpnext remote add origin \
+            https://github.com/frappe/erpnext.git
+
+          git -C ../erpnext fetch \
+            --depth 1 \
+            origin \
+            07ac4d83ef097c83e18b246dac5196d6c7b0656b
+
+          git -C ../erpnext checkout \
+            --detach \
+            FETCH_HEAD
+
+          echo "Checked out ERPNext revision:"
+          git -C ../erpnext rev-parse HEAD
 
       - name: Validate Docker Compose
         run: |
