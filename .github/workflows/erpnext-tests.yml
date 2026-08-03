@@ -24,6 +24,8 @@ jobs:
             https://github.com/frappe/erpnext.git \
             ../erpnext
 
+            git -C ../erpnext checkout 07ac4d83ef097c83e18b246dac5196d6c7b0656b
+
       - name: Validate Docker Compose
         run: |
           docker compose \
