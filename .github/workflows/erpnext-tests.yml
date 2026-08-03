@@ -147,3 +147,12 @@ jobs:
             down \
             --volumes \
             --remove-orphans
+
+      - name: Show application revisions
+        run: |
+          echo "ERPNext revision:"
+          git -C ../erpnext rev-parse HEAD
+
+          echo "Frappe revision:"
+          docker compose -f compose.dev.yaml exec -T frappe \
+            git -C /workspace/frappe-bench/apps/frappe rev-parse HEAD
