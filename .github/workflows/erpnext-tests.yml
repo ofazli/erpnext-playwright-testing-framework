@@ -1,0 +1,41 @@
+name: ERPNext Playwright Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  prepare-environment:
+    name: Prepare ERPNext Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout testing framework
+        uses: actions/checkout@v4
+
+      - name: Show testing framework files
+        run: |
+          echo "Testing framework location:"
+          pwd
+
+          echo "Testing framework files:"
+          ls -la
+
+      - name: Clone ERPNext repository
+        run: |
+          git clone \
+            --depth 1 \
+            https://github.com/frappe/erpnext.git \
+            ../erpnext
+
+      - name: Show ERPNext files
+        run: |
+          echo "ERPNext repository location:"
+          cd ../erpnext
+          pwd
+
+          echo "ERPNext repository files:"
+          ls -la
