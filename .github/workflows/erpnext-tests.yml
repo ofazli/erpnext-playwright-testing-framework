@@ -31,6 +31,13 @@ jobs:
             https://github.com/frappe/erpnext.git \
             ../erpnext
 
+      - name: Validate Docker Compose
+        run: docker compose -f compose.dev.yaml config
+
+      - name: Start Docker Containers
+        run: |
+          docker compose -f compose.dev.yaml up -d
+
       - name: Show ERPNext files
         run: |
           echo "ERPNext repository location:"
