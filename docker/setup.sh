@@ -131,7 +131,7 @@ fi
 
 log "Completing ERPNext Setup Wizard"
 
-CI_SETUP_MODULE="$ERPNEXT_DIR/erpnext/ci_setup.py"
+CI_SETUP_MODULE="$BENCH_DIR/apps/frappe/frappe/ci_setup.py"
 
 cleanup_ci_setup_module() {
 	rm -f "$CI_SETUP_MODULE"
@@ -198,7 +198,7 @@ PYTHON
 
 bench \
 	--site "$SITE_NAME" \
-	execute erpnext.ci_setup.complete
+	execute frappe.ci_setup.complete
 
 cleanup_ci_setup_module
 trap - EXIT
