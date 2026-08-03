@@ -1,5 +1,6 @@
 import { test, expect } from '../../../fixtures/pages'
 import { adminUser } from '../../../test-data/users'
+import { CustomerFactory } from '../../../factories/CustomerFactory'
 
 test('Basic Login Test', async ({
   page,
@@ -9,6 +10,7 @@ test('Basic Login Test', async ({
   customerPage,
   newCustomerModalPage,
 }) => {
+  const newCustomer = CustomerFactory.create()
   await loginPage.goToMainPage()
   await loginPage.assertWelcomeTextMessage('Welcome')
   await loginPage.basicLogin(adminUser)
@@ -17,5 +19,6 @@ test('Basic Login Test', async ({
   await homePage.clickCustomerBtn()
   await customerPage.assertCustomerTxt('Customer')
   await customerPage.clickAddCustomerBtn()
+  await newCustomerModalPage.createCustomer(newCustomer)
   await page.pause()
 })
