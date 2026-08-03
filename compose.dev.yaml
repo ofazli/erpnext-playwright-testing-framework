@@ -43,7 +43,7 @@ services:
 
   setup:
     image: docker.io/frappe/bench:latest
-    command: ['bash', '/workspace/erpnext/docker/setup.sh']
+    command: ['bash', '/workspace/docker/setup.sh']
     environment:
       BENCH_DIR: /workspace/frappe-bench
       SITE_NAME: ${SITE_NAME:-erpnext.localhost}
@@ -53,6 +53,7 @@ services:
     volumes:
       - bench-data:/workspace/frappe-bench
       - ../erpnext:/workspace/erpnext:cached
+      - ./docker:/workspace/docker:ro
       - erpnext-node-modules:/workspace/erpnext/node_modules
       - banking-node-modules:/workspace/erpnext/banking/node_modules
     depends_on:
