@@ -10,6 +10,11 @@ ARM64 variant, but both variants come from the same image release. This avoids a
 cached local tag such as `frappe/bench:latest` differing from the tag fetched by
 a fresh GitHub Actions runner.
 
+The setup also builds Frappe and ERPNext browser assets explicitly and verifies
+the ERPNext JavaScript and CSS bundles. Without those bundles, Frappe falls back
+to its generic Customer quick-entry dialog and fields such as the primary contact
+and address are missing.
+
 Start and bootstrap the environment:
 
 ```bash

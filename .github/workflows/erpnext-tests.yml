@@ -97,6 +97,14 @@ jobs:
 
           exit 1
 
+      - name: Verify ERPNext browser assets
+        run: |
+          docker compose \
+            -f compose.dev.yaml \
+            exec -T frappe \
+            python -c \
+            'import json; from pathlib import Path; sites = Path("/workspace/frappe-bench/sites"); asset = json.loads((sites / "assets/assets.json").read_text())["erpnext.bundle.js"]; assert asset.startswith("/assets/erpnext/dist/js/erpnext.bundle."); assert (sites / asset.lstrip("/")).is_file()'
+
       - name: Show application revisions
         run: |
           echo "=============================="

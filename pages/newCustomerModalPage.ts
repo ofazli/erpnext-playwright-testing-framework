@@ -77,7 +77,10 @@ export class NewCustomerModalPage {
     await this.cityInput.fill(customer.city)
     await this.stateInput.fill(customer.state)
     await this.countryInput.fill(customer.country)
-    await this.page.waitForTimeout(1500)
+    await this.page
+      .getByRole('option', { name: customer.country, exact: true })
+      .last()
+      .click()
     await this.saveButton.click()
     await expect(
       this.page.getByText(`${customer.customerName} saved`)
