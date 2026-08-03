@@ -97,6 +97,11 @@ bench set-config -g redis_queue redis://redis-queue:6379
 bench set-config -g redis_socketio redis://redis-queue:6379
 bench set-config -gp developer_mode 1
 
+log "Configuring Git safe directories"
+
+git config --global --add safe.directory "$ERPNEXT_DIR"
+git config --global --add safe.directory "$BENCH_DIR/apps/frappe"
+
 log "Linking ERPNext source code"
 
 if [[ -e "$BENCH_DIR/apps/erpnext" && ! -L "$BENCH_DIR/apps/erpnext" ]]; then
