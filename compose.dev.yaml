@@ -1,8 +1,15 @@
 name: erpnext-dev
 
+# Keep local development and GitHub Actions on the same immutable image set.
+# The manifest-list digests select the matching AMD64/ARM64 image automatically.
+x-images:
+  mariadb: &mariadb-image docker.io/mariadb:11.8@sha256:efb4959ef2c835cd735dbc388eb9ad6aab0c78dd64febcd51bc17481111890c4
+  redis: &redis-image docker.io/redis:alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
+  frappe-bench: &frappe-bench-image docker.io/frappe/bench:latest@sha256:2578ab74eb82f7f264ce33235d5631c8a1289deeab2a1422bc76d738b8e6d219
+
 services:
   mariadb:
-    image: docker.io/mariadb:11.8
+    image: *mariadb-image
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -20,7 +27,7 @@ services:
     restart: unless-stopped
 
   redis-cache:
-    image: docker.io/redis:alpine
+    image: *redis-image
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
@@ -31,7 +38,7 @@ services:
     restart: unless-stopped
 
   redis-queue:
-    image: docker.io/redis:alpine
+    image: *redis-image
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
@@ -42,7 +49,7 @@ services:
     restart: unless-stopped
 
   setup:
-    image: docker.io/frappe/bench:latest
+    image: *frappe-bench-image
     command: ['bash', '/workspace/docker/setup.sh']
     environment:
       BENCH_DIR: /workspace/frappe-bench
@@ -65,7 +72,7 @@ services:
         condition: service_healthy
 
   frappe:
-    image: docker.io/frappe/bench:latest
+    image: *frappe-bench-image
     command:
       - bash
       - -lc
