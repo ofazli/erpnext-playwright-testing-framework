@@ -32,9 +32,21 @@ jobs:
 
       - name: Start Docker containers
         run: |
-          docker compose \
-            -f compose.dev.yaml \
-            up -d
+          if ! docker compose -f compose.dev.yaml up -d; then
+            echo "ERPNext setup failed. Printing setup logs..."
+
+            docker compose \
+              -f compose.dev.yaml \
+              ps -a
+
+            docker compose \
+              -f compose.dev.yaml \
+              logs \
+              --no-color \
+              setup
+
+            exit 1
+          fi
 
       - name: Show Docker containers
         run: |
@@ -81,14 +93,33 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: |
+          npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         env:
           BASE_URL: http://localhost:8000
           ADMIN_USERNAME: Administrator
           ADMIN_PASSWORD: admin
-        run: npx playwright test
+        run: |
+          npx playwright test
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          echo "Docker container status:"
+
+          docker compose \
+            -f compose.dev.yaml \
+            ps -a
+
+          echo "Recent Docker logs:"
+
+          docker compose \
+            -f compose.dev.yaml \
+            logs \
+            --no-color \
+            --tail=500
 
       - name: Upload Playwright report
         if: always()
@@ -107,3 +138,12 @@ jobs:
           path: test-results/
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Stop Docker containers
+        if: always()
+        run: |
+          docker compose \
+            -f compose.dev.yaml \
+            down \
+            --volumes \
+            --remove-orphans
