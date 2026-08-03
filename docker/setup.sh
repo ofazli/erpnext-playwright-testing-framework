@@ -126,7 +126,42 @@ printf "frappe\nerpnext\n" > "$BENCH_DIR/sites/apps.txt"
 
 log "Building application assets"
 
-bench build
+bench build --apps frappe,erpnext
+
+log "Validating application assets"
+
+python - \
+	"$BENCH_DIR/sites/assets/assets.json" \
+	"$BENCH_DIR/sites" <<'PYTHON'
+import json
+import sys
+from pathlib import Path
+
+manifest_path = Path(sys.argv[1])
+sites_path = Path(sys.argv[2])
+
+required_assets = (
+    "erpnext.bundle.js",
+    "erpnext.bundle.css",
+    "erpnext-web.bundle.css",
+)
+
+if not manifest_path.is_file():
+    raise RuntimeError(f"Asset manifest was not created: {manifest_path}")
+
+manifest = json.loads(manifest_path.read_text())
+
+for asset in required_assets:
+    built_asset = manifest.get(asset)
+    if not built_asset:
+        raise RuntimeError(f"Required asset is missing from manifest: {asset}")
+
+    built_asset_path = sites_path / built_asset.lstrip("/")
+    if not built_asset_path.is_file():
+        raise RuntimeError(f"Required asset file was not created: {built_asset_path}")
+
+print("ERPNext JavaScript and CSS bundles are present.")
+PYTHON
 
 if [[ ! -f "$BENCH_DIR/sites/$SITE_NAME/site_config.json" ]]; then
 	log "Creating site: $SITE_NAME"
