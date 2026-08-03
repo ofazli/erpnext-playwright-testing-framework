@@ -1,0 +1,104 @@
+name: erpnext-dev
+
+services:
+  mariadb:
+    image: docker.io/mariadb:11.8
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-123}
+      MARIADB_AUTO_UPGRADE: "1"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+
+  redis-cache:
+    image: docker.io/redis:alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - redis-cache-data:/data
+    restart: unless-stopped
+
+  redis-queue:
+    image: docker.io/redis:alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - redis-queue-data:/data
+    restart: unless-stopped
+
+  setup:
+    image: docker.io/frappe/bench:latest
+    command: ["bash", "/workspace/erpnext/docker/setup.sh"]
+    environment:
+      BENCH_DIR: /workspace/frappe-bench
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-123}
+    working_dir: /workspace
+    volumes:
+      - bench-data:/workspace/frappe-bench
+      - .:/workspace/erpnext:cached
+      - erpnext-node-modules:/workspace/erpnext/node_modules
+      - banking-node-modules:/workspace/erpnext/banking/node_modules
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+
+  frappe:
+    image: docker.io/frappe/bench:latest
+    command:
+      - bash
+      - -lc
+      - >-
+        sudo rmdir /sites 2>/dev/null || true;
+        sudo ln -sfn /workspace/frappe-bench/sites /sites &&
+        bench start
+    environment:
+      BENCH_DIR: /workspace/frappe-bench
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+    working_dir: /workspace/frappe-bench
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    volumes:
+      - bench-data:/workspace/frappe-bench
+      - .:/workspace/erpnext:cached
+      - erpnext-node-modules:/workspace/erpnext/node_modules
+      - banking-node-modules:/workspace/erpnext/banking/node_modules
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/api/method/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  bench-data:
+  mariadb-data:
+  redis-cache-data:
+  redis-queue-data:
+  erpnext-node-modules:
+  banking-node-modules:
