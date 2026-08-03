@@ -11,18 +11,11 @@ jobs:
   prepare-environment:
     name: Prepare ERPNext Environment
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout testing framework
         uses: actions/checkout@v4
-
-      - name: Show testing framework files
-        run: |
-          echo "Testing framework location:"
-          pwd
-
-          echo "Testing framework files:"
-          ls -la
 
       - name: Clone ERPNext repository
         run: |
@@ -32,21 +25,48 @@ jobs:
             ../erpnext
 
       - name: Validate Docker Compose
-        run: docker compose -f compose.dev.yaml config
-
-      - name: Start Docker Containers
         run: |
-          docker compose -f compose.dev.yaml up -d
+          docker compose \
+            -f compose.dev.yaml \
+            config
 
-      - name: Show Docker Containers
+      - name: Start Docker containers
         run: |
-          docker compose -f compose.dev.yaml ps -a
+          docker compose \
+            -f compose.dev.yaml \
+            up -d
 
-      - name: Show ERPNext files
+      - name: Show Docker containers
         run: |
-          echo "ERPNext repository location:"
-          cd ../erpnext
-          pwd
+          docker compose \
+            -f compose.dev.yaml \
+            ps -a
 
-          echo "ERPNext repository files:"
-          ls -la
+      - name: Wait for ERPNext
+        run: |
+          for attempt in {1..30}; do
+            if curl \
+              --fail \
+              --silent \
+              http://localhost:8000/api/method/ping; then
+              echo
+              echo "ERPNext is ready."
+              exit 0
+            fi
+
+            echo "Waiting for ERPNext... Attempt ${attempt}/30"
+            sleep 5
+          done
+
+          echo "ERPNext failed to become ready."
+
+          docker compose \
+            -f compose.dev.yaml \
+            ps -a
+
+          docker compose \
+            -f compose.dev.yaml \
+            logs \
+            --no-color
+
+          exit 1
