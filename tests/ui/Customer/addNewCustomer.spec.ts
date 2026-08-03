@@ -20,5 +20,4 @@ test('Basic Login Test', async ({
   await customerPage.assertCustomerTxt('Customer')
   await customerPage.clickAddCustomerBtn()
   await newCustomerModalPage.createCustomer(newCustomer)
-  await page.pause()
 })
