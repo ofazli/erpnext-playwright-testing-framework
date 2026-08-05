@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "docker:start": "docker compose -f compose.dev.yaml up -d",
+    "docker:reset": "docker compose -f compose.dev.yaml down --volumes --remove-orphans && docker compose -f compose.dev.yaml up -d"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
