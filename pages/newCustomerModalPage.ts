@@ -74,6 +74,7 @@ export class NewCustomerModalPage {
     await this.addressLine1Input.fill(customer.addressLine1)
     await this.addressLine2Input.fill(customer.addressLine2 || '')
     await this.zipCodeInput.fill(customer.zipCode)
+    await this.page.waitForTimeout(1000)
     await this.cityInput.fill(customer.city)
     await this.stateInput.fill(customer.state)
     await this.countryInput.fill(customer.country)
@@ -85,5 +86,9 @@ export class NewCustomerModalPage {
     await expect(
       this.page.getByText(`${customer.customerName} saved`)
     ).toBeVisible()
+  }
+
+  async asserCustomerCreated(customerName: string): Promise<void> {
+    await expect(this.page.locator(`[title="${customerName}"]`)).toBeVisible()
   }
 }
