@@ -2,7 +2,7 @@ import { test, expect } from '../../../fixtures/pages'
 import { adminUser } from '../../../test-data/users'
 import { CustomerFactory } from '../../../factories/CustomerFactory'
 
-test('Basic Login Test', async ({
+test('+Add New Customer Test', async ({
   page,
   loginPage,
   deckPage,
@@ -20,4 +20,5 @@ test('Basic Login Test', async ({
   await customerPage.assertCustomerTxt('Customer')
   await customerPage.clickAddCustomerBtn()
   await newCustomerModalPage.createCustomer(newCustomer)
+  await newCustomerModalPage.asserCustomerCreated(newCustomer.customerName)
 })
