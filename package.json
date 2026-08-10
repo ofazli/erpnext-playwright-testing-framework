@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "docker:start": "docker compose -f compose.dev.yaml up -d",
-    "docker:reset": "docker compose -f compose.dev.yaml down --volumes --remove-orphans && docker compose -f compose.dev.yaml up -d"
+    "docker:reset": "docker compose -f compose.dev.yaml down --volumes --remove-orphans && docker compose -f compose.dev.yaml up -d",
+    "rundocker": "docker compose -f compose.dev.yaml down --volumes --rmi local --remove-orphans && docker compose -f compose.dev.yaml pull && docker compose -f compose.dev.yaml up -d --force-recreate"
   },
   "keywords": [],
   "author": "",
