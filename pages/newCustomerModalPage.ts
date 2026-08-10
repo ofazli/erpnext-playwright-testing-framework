@@ -5,6 +5,7 @@ import type { Customer } from '../models/Customer'
 export class NewCustomerModalPage {
   private readonly customerNameInput: Locator
   private readonly customerTypeDropdown: Locator
+  private readonly emailIdInput: Locator
   private readonly firstNameInput: Locator
   private readonly lastNameInput: Locator
   private readonly mobileNumberInput: Locator
@@ -28,61 +29,107 @@ export class NewCustomerModalPage {
       .last()
 
     this.firstNameInput = page
-      .locator('.modal-content [data-fieldname="map_to_first_name"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="map_to_first_name"]'
+      )
       .last()
 
     this.lastNameInput = page
-      .locator('.modal-content [data-fieldname="map_to_last_name"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="map_to_last_name"]'
+      )
       .last()
 
+    this.emailIdInput = page
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="email_address"]'
+      )
+      .last()
     this.mobileNumberInput = page
-      .locator('.modal-content [data-fieldname="mobile_number"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="mobile_number"]'
+      )
       .last()
 
     this.addressLine1Input = page
-      .locator('.modal-content [data-fieldname="address_line1"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="address_line1"]'
+      )
       .last()
     this.addressLine2Input = page
-      .locator('.modal-content [data-fieldname="address_line2"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="address_line2"]'
+      )
       .last()
     this.zipCodeInput = page
-      .locator('.modal-content [data-fieldname="pincode"]')
+      .locator('.modal-content .input-with-feedback[data-fieldname="pincode"]')
       .last()
     this.cityInput = page
-      .locator('.modal-content [data-fieldname="city"]')
+      .locator('.modal-content .input-with-feedback[data-fieldname="city"]')
       .last()
     this.stateInput = page
-      .locator('.modal-content [data-fieldname="state"]')
+      .locator('.modal-content .input-with-feedback[data-fieldname="state"]')
       .last()
     this.countryInput = page
-      .locator('.modal-content [data-fieldname="country_address"]')
+      .locator(
+        '.modal-content .input-with-feedback[data-fieldname="country_address"]'
+      )
       .last()
     this.saveButton = page
       .locator('.modal-footer .standard-actions .es-button__label')
       .last()
   }
 
-  async createCustomer(customer: Customer): Promise<void> {
-    await this.customerNameInput.fill(customer.customerName)
+  private async fillAndAssert(input: Locator, value: string): Promise<void> {
+    await expect(input).toBeVisible()
+    await expect(input).toBeEnabled()
+    await input.fill(value)
+    await expect(input).toHaveValue(value)
+  }
 
+  async createCustomer(customer: Customer): Promise<void> {
+    // Customer name field
+    await this.fillAndAssert(this.customerNameInput, customer.customerName)
+
+    // Customer type dropdown field
     await this.customerTypeDropdown.selectOption({
       label: customer.customerType,
     })
-    await this.firstNameInput.fill(customer.firstName)
-    await this.lastNameInput.fill(customer.lastName)
-    await this.mobileNumberInput.fill(customer.mobileNumber.toString())
-    await this.addressLine1Input.fill(customer.addressLine1)
-    await this.addressLine2Input.fill(customer.addressLine2 || '')
-    await this.zipCodeInput.fill(customer.zipCode)
-    await this.page.waitForTimeout(1000)
-    await this.cityInput.fill(customer.city)
-    await this.stateInput.fill(customer.state)
+
+    //Customer FirstName Field
+    await this.fillAndAssert(this.firstNameInput, customer.firstName)
+    //Customer LastName Field
+    await this.fillAndAssert(this.lastNameInput, customer.lastName)
+    //Customer Emailid Field
+    await this.fillAndAssert(this.emailIdInput, customer.emailId)
+    //Customer MobileNumber Field
+    await this.fillAndAssert(
+      this.mobileNumberInput,
+      customer.mobileNumber.toString()
+    )
+    //Customer AddressLine1 Field
+    await this.fillAndAssert(this.addressLine1Input, customer.addressLine1)
+    //Customer AddressLine2 Field
+    await this.fillAndAssert(
+      this.addressLine2Input,
+      customer.addressLine2 || ''
+    )
+    //Customer ZipCode Field
+    await this.fillAndAssert(this.zipCodeInput, customer.zipCode)
+    //Customer City Field
+    await this.fillAndAssert(this.cityInput, customer.city)
+    //Customer State Field
+    await this.fillAndAssert(this.stateInput, customer.state)
+    //Customer Country Field
     await this.countryInput.fill(customer.country)
     await this.page
       .getByRole('option', { name: customer.country, exact: true })
       .last()
       .click()
+
     await this.saveButton.click()
+
+    await expect(this.page.getByText('Missing Values Required')).toHaveCount(0)
     await expect(
       this.page.getByText(`${customer.customerName} saved`)
     ).toBeVisible()
