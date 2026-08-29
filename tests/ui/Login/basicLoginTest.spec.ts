@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test'
 import { LoginPage } from '../../../pages/loginPage'
-import { DeckPage } from '../../../pages/deckPage'
+import { DeckPage } from '../../../pages/deskPage'
 import { adminUser } from '../../../test-data/users'
 import { HomePage } from '../../../pages/homePage'
+
+test.use({ storageState: { cookies: [], origins: [] } })
 
 test('Basic Login Test', async ({ page }) => {
   const loginPage = new LoginPage(page)
