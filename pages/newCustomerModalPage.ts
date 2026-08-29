@@ -16,6 +16,7 @@ export class NewCustomerModalPage {
   private readonly countryInput: Locator
   private readonly zipCodeInput: Locator
   private readonly saveButton: Locator
+  private readonly redDot: Locator
 
   constructor(private readonly page: Page) {
     this.customerNameInput = page
@@ -78,13 +79,17 @@ export class NewCustomerModalPage {
     this.saveButton = page
       .locator('.modal-footer .standard-actions .es-button__label')
       .last()
+
+    this.redDot = page
+      .locator('[data-fieldname="city"] .control-label.reqd')
+      .last()
   }
 
   private async fillAndAssert(input: Locator, value: string): Promise<void> {
     await expect(input).toBeVisible()
     await expect(input).toBeEnabled()
-    await input.fill(value)
-    await expect(input).toHaveValue(value)
+    await input.click()
+    await input.pressSequentially(value, { delay: 20 })
   }
 
   async createCustomer(customer: Customer): Promise<void> {
@@ -109,6 +114,9 @@ export class NewCustomerModalPage {
     )
     //Customer AddressLine1 Field
     await this.fillAndAssert(this.addressLine1Input, customer.addressLine1)
+    await this.page.keyboard.press('Tab')
+    //Wait For Red Dot
+    await this.redDot.waitFor({ state: 'visible' })
     //Customer AddressLine2 Field
     await this.fillAndAssert(
       this.addressLine2Input,
