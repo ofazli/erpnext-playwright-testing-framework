@@ -2,6 +2,7 @@ import { test as base, expect, type APIRequestContext } from '@playwright/test'
 
 import { ERPNextApiClient } from '../api/client/erpnextApiClient'
 import { CustomerApi } from '../api/client/customerApi'
+import { NewBankApi } from '../api/client/newBankApi'
 import { fetchCsrfToken } from '../api/utils/csrfToken'
 
 type ApiFixtures = {
@@ -9,6 +10,7 @@ type ApiFixtures = {
   csrfToken: string
   erpnextApiClient: ERPNextApiClient
   customerApi: CustomerApi
+  bankApi: NewBankApi
 }
 
 export const test = base.extend<ApiFixtures>({
@@ -75,6 +77,10 @@ export const test = base.extend<ApiFixtures>({
 
   customerApi: async ({ erpnextApiClient }, use) => {
     await use(new CustomerApi(erpnextApiClient))
+  },
+
+  bankApi: async ({ erpnextApiClient }, use) => {
+    await use(new NewBankApi(erpnextApiClient))
   },
 })
 

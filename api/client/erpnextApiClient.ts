@@ -37,7 +37,13 @@ export class ERPNextApiClient {
     })
   }
 
-  async delete(endpoint: string): Promise<APIResponse> {
-    return this.request.delete(endpoint)
+  async delete<TRequest>(
+    endpoint: string,
+    payload: TRequest
+  ): Promise<APIResponse> {
+    return this.request.delete(endpoint, {
+      data: payload,
+      headers: this.jsonHeaders(),
+    })
   }
 }

@@ -1,6 +1,10 @@
 import { test } from '../../../../fixtures/pages'
 const addBankModalTxt = 'New Bank'
 test.describe('Payments - Banking Setup', () => {
+  // These tests share the same ERPNext Administrator session. Running them in
+  // parallel can deadlock Frappe's tabUser session metadata update.
+  test.describe.configure({ mode: 'default' })
+
   test.beforeEach(async ({ loginPage, deckPage }) => {
     await loginPage.goToMainPage()
     await deckPage.clickErpNextLogo()
@@ -37,5 +41,22 @@ test.describe('Payments - Banking Setup', () => {
     await bankPage.fillBankNameSwiftNum(bankName)
     await bankPage.clickNewBankSaveBtn()
     await bankPage.assertNewBankSuccessMsg(`${bankName} saved`)
+  })
+  test('Should show validation when bank name is empty', async ({
+    deckPage,
+    paymentsPage,
+    bankPage,
+    page,
+  }) => {
+    await deckPage.clickPaymentsBtn()
+    await paymentsPage.clickBankingDropDown()
+    await paymentsPage.clickBankBnt()
+    await bankPage.clickBankBtn()
+    await bankPage.clickAddBankBtn()
+    await bankPage.clickNewBankSaveBtn()
+    await bankPage.assertModalTextValidation(
+      'Missing Values Required',
+      'Bank Name'
+    )
   })
 })
