@@ -7,6 +7,7 @@ export class BankPage {
   private readonly bankNameInput: Locator
   private readonly swiftNumInput: Locator
   private readonly newBankSaveBtn: Locator
+  private readonly missingFieldValidation: Locator
 
   constructor(private readonly page: Page) {
     this.bankBtn = page.locator('[data-id="Bank"]')
@@ -25,6 +26,7 @@ export class BankPage {
     this.newBankSaveBtn = page
       .locator('button.es-button.btn-modal-primary')
       .last()
+    this.missingFieldValidation = page.locator('.modal-body .msgprint li')
   }
 
   async clickBankBtn() {
@@ -52,5 +54,10 @@ export class BankPage {
   }
   async assertNewBankSuccessMsg(text: string) {
     await expect(this.page.getByText(text)).toBeVisible()
+  }
+  async assertModalTextValidation(text: string, text1: string) {
+    await this.modalText.waitFor({ state: 'visible' })
+    await expect(this.modalText.last()).toContainText(text, { timeout: 10000 })
+    await expect(this.missingFieldValidation).toContainText(text1)
   }
 }
