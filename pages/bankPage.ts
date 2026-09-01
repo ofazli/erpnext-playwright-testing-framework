@@ -8,6 +8,10 @@ export class BankPage {
   private readonly swiftNumInput: Locator
   private readonly newBankSaveBtn: Locator
   private readonly missingFieldValidation: Locator
+  private readonly moreOptionsBtn: Locator
+  private readonly deleteBankBtn: Locator
+  private readonly deleteBankConfirmModal: Locator
+  private readonly deleteBankConfirmBtn: Locator
 
   constructor(private readonly page: Page) {
     this.bankBtn = page.locator('[data-id="Bank"]')
@@ -27,6 +31,18 @@ export class BankPage {
       .locator('button.es-button.btn-modal-primary')
       .last()
     this.missingFieldValidation = page.locator('.modal-body .msgprint li')
+    this.moreOptionsBtn = page.getByRole('button', {
+      name: 'Menu',
+      exact: true,
+    })
+    this.deleteBankBtn = page.locator(
+      '.es-menu__label:visible:has-text("Delete")'
+    )
+    this.deleteBankConfirmModal = page.locator('.modal').filter({
+      has: page.getByRole('heading', { name: 'Confirm', exact: true }),
+    })
+    this.deleteBankConfirmBtn =
+      this.deleteBankConfirmModal.locator('.btn-modal-primary')
   }
 
   async clickBankBtn() {
@@ -44,7 +60,7 @@ export class BankPage {
   async fillBankNameSwiftNum(bankName: string, swift?: string) {
     await this.bankNameInput.fill(bankName)
     await expect(this.bankNameInput).toHaveValue(bankName)
-    if (swift) {
+    if (swift !== undefined) {
       await this.swiftNumInput.fill(swift)
     }
   }
@@ -59,5 +75,29 @@ export class BankPage {
     await this.modalText.waitFor({ state: 'visible' })
     await expect(this.modalText.last()).toContainText(text, { timeout: 10000 })
     await expect(this.missingFieldValidation).toContainText(text1)
+  }
+  async clickSpecificBank(bankName: string) {
+    const bankLocator = this.page.locator(
+      `.level-item.bold [data-name="${bankName}"]`
+    )
+    await bankLocator.waitFor({ state: 'visible' })
+    await bankLocator.click()
+  }
+  async clickMoreOptionsBtn() {
+    await expect(this.moreOptionsBtn).toBeVisible()
+    await this.moreOptionsBtn.click({ force: true })
+  }
+  async clickDeleteBankBtn() {
+    await this.deleteBankBtn.waitFor({ state: 'visible' })
+    await this.deleteBankBtn.click()
+  }
+  async clickDeleteBankConfirmBtn() {
+    await expect(
+      this.deleteBankConfirmModal.getByRole('heading', {
+        name: 'Confirm',
+        exact: true,
+      })
+    ).toBeVisible({ timeout: 10000 })
+    await this.deleteBankConfirmBtn.click()
   }
 }

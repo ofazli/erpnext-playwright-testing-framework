@@ -46,7 +46,6 @@ test.describe('Payments - Banking Setup', () => {
     deckPage,
     paymentsPage,
     bankPage,
-    page,
   }) => {
     await deckPage.clickPaymentsBtn()
     await paymentsPage.clickBankingDropDown()
@@ -58,5 +57,24 @@ test.describe('Payments - Banking Setup', () => {
       'Missing Values Required',
       'Bank Name'
     )
+  })
+  test('Should delete an existing bank', async ({
+    deckPage,
+    paymentsPage,
+    bankPage,
+  }) => {
+    const bankName = `${Date.now()} TD Canada Trust`
+    await deckPage.clickPaymentsBtn()
+    await paymentsPage.clickBankingDropDown()
+    await paymentsPage.clickBankBnt()
+    await bankPage.clickBankBtn()
+    await bankPage.clickAddBankBtn()
+    await bankPage.fillBankNameSwiftNum(bankName)
+    await bankPage.clickNewBankSaveBtn()
+    await bankPage.assertNewBankSuccessMsg(`${bankName} saved`)
+    await bankPage.clickSpecificBank(bankName)
+    await bankPage.clickMoreOptionsBtn()
+    await bankPage.clickDeleteBankBtn()
+    await bankPage.clickDeleteBankConfirmBtn()
   })
 })
