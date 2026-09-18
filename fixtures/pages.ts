@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test'
+import { test as apiTest } from './api'
 import { LoginPage } from '../pages/loginPage'
 import { DeckPage } from '../pages/deskPage'
 import { HomePage } from '../pages/homePage'
@@ -6,8 +6,9 @@ import { CustomerPage } from '../pages/customerPage'
 import { NewCustomerModalPage } from '../pages/newCustomerModalPage'
 import { PaymentsPage } from '../pages/paymentsPage'
 import { BankPage } from '../pages/bankPage'
+import { BankAccountTypePage } from '../pages/bankAccountTypePage'
 
-export const test = base.extend<{
+export const test = apiTest.extend<{
   loginPage: LoginPage
   deckPage: DeckPage
   homePage: HomePage
@@ -15,6 +16,7 @@ export const test = base.extend<{
   newCustomerModalPage: NewCustomerModalPage
   paymentsPage: PaymentsPage
   bankPage: BankPage
+  bankAccountTypePage: BankAccountTypePage
 }>({
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page))
@@ -37,6 +39,9 @@ export const test = base.extend<{
   bankPage: async ({ page }, use) => {
     await use(new BankPage(page))
   },
+  bankAccountTypePage: async ({ page }, use) => {
+    await use(new BankAccountTypePage(page))
+  },
 })
 
-export { expect } from '@playwright/test'
+export { expect } from './api'
