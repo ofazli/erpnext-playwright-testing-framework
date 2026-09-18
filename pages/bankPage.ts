@@ -12,6 +12,7 @@ export class BankPage {
   private readonly deleteBankBtn: Locator
   private readonly deleteBankConfirmModal: Locator
   private readonly deleteBankConfirmBtn: Locator
+  private readonly bankAccountTypeBtn: Locator
 
   constructor(private readonly page: Page) {
     this.bankBtn = page.locator('[data-id="Bank"]')
@@ -31,10 +32,11 @@ export class BankPage {
       .locator('button.es-button.btn-modal-primary')
       .last()
     this.missingFieldValidation = page.locator('.modal-body .msgprint li')
-    this.moreOptionsBtn = page.getByRole('button', {
-      name: 'Menu',
-      exact: true,
-    })
+    // this.moreOptionsBtn = page.getByRole('button', {
+    //   name: 'Menu',
+    //   exact: true,
+    // })
+    this.moreOptionsBtn = page.locator('.menu-more-button').last()
     this.deleteBankBtn = page.locator(
       '.es-menu__label:visible:has-text("Delete")'
     )
@@ -43,6 +45,7 @@ export class BankPage {
     })
     this.deleteBankConfirmBtn =
       this.deleteBankConfirmModal.locator('.btn-modal-primary')
+    this.bankAccountTypeBtn = page.locator('[data-id="Bank Account Type"]')
   }
 
   async clickBankBtn() {
@@ -99,5 +102,12 @@ export class BankPage {
       })
     ).toBeVisible({ timeout: 10000 })
     await this.deleteBankConfirmBtn.click()
+  }
+  async clickBankAccountTpyeBtn() {
+    await this.bankAccountTypeBtn.waitFor({ state: 'visible' })
+    await this.bankAccountTypeBtn.click()
+  }
+  async assertNewBankCreatedSuccessfully(text: string) {
+    await expect(this.page.locator(`[title="${text}"]`)).toBeVisible()
   }
 }
