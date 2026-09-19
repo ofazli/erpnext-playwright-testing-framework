@@ -1,5 +1,5 @@
-import { test, expect } from '../../../../fixtures/pages'
-import { buildBank } from '../../../../api/builders/bankBuilder'
+import { test, expect } from '../../../../../fixtures/pages'
+import { buildBank } from '../../../../../api/builders/bankBuilder'
 
 test.describe('Payments - Bank Account Type', () => {
   test.describe.configure({ mode: 'default' })
