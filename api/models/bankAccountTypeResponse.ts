@@ -13,4 +13,7 @@ export interface CreateBankAccountTypeResponse {
   docs: BankAccountTypeResponseData[]
   docinfo?: Record<string, unknown>
 }
-
+export interface DeleteBankAccountTypeResponse {
+  doctype: 'Bank Account Type'
+  name: string
+}
