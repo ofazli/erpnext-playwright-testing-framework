@@ -11,3 +11,7 @@ export interface CreateBankAccountTypeRequest {
   action: 'Save'
 }
 
+export interface DeleteBankAccountTypeRequest {
+  doctype: 'Bank Account Type'
+  name: string
+}
